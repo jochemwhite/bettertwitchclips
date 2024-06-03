@@ -12,7 +12,7 @@ interface EmbeddedClipProps {
 export default function EmbeddedClip({ height, width, embed_url, autoplay, muted}: EmbeddedClipProps) {
   return (
     <iframe
-      src={embed_url + `&parent=localhost&autoplay=${autoplay}&muted=${muted}`}
+      src={embed_url + `&parent=localhost&parent=bettertwitchclips.com&autoplay=${autoplay}&muted=${muted}`}
       height={height}
       width={width}
       
