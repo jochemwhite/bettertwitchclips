@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { searchChatter } from "@/actions/twitch-api";
 import { SearchBar } from "../ui/search-bar";
+import Link from "next/link";
 
 interface results extends ChannelSearchResult {
   exactMatch?: boolean;
@@ -14,9 +15,6 @@ interface results extends ChannelSearchResult {
 
 export default function TwitchSearchBar() {
   const [results, setResults] = useState<results[]>([]);
-
-
-
 
   const search = async (searchTerm: string) => {
     const data = await searchChatter(searchTerm, 5);
@@ -74,17 +72,14 @@ export default function TwitchSearchBar() {
                     <HoverCardTrigger asChild>
                       <Button variant="ghost">{channel.display_name}</Button>
                     </HoverCardTrigger>
-                    <HoverCardContent className="w-80">
-                    </HoverCardContent>
+                    <HoverCardContent className="w-80"></HoverCardContent>
                   </HoverCard>
                   {channel.exactMatch && <span className="text-xs text-red-500">Exact Match</span>}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="default"
-                    >
-                   View Clips
-                  </Button>
+                  <Link href={`/clips/${channel.broadcaster_login}`}>
+                    <Button variant="default">View Clips</Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

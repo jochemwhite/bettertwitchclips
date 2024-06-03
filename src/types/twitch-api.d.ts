@@ -43,7 +43,7 @@ interface Pagination {
 }
 
 // Interface for a single clip object in the response
-interface Clip {
+export interface Clip {
   id: string;
   url: string;
   embed_url: string;

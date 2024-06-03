@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import TwitchSearchBar from "@/components/search-bars/twitch-search";
+import ReactQueryProvider from "@/providers/reactquery-provider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Footer from "@/components/layout/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,9 +22,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+        <ReactQueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+            <main className="w-[1600px] mx-auto">
+              <TwitchSearchBar />
+              <div className="mt-4">{children}</div>
+            </main>
+            <Footer />
+          </ThemeProvider>
+          <ReactQueryDevtools />
+        </ReactQueryProvider>
       </body>
     </html>
   );
