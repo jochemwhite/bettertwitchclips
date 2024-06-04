@@ -4,6 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { getClips } from "@/actions/twitch-api";
 import ClipCard from "./cards/clip-card";
 import { useInView } from 'react-intersection-observer'
+import { useParams, useSearchParams } from 'next/navigation'
 
 interface Props {
   broadcaster_name: string;
@@ -11,10 +12,14 @@ interface Props {
 
 const TwitchClips: React.FC<Props> = ({ broadcaster_name }) => {
   const {ref, inView} = useInView();
+  const searchParams = useSearchParams()
+
+  const game_id = searchParams.get('game_id');
+
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status, error } = useInfiniteQuery({
     queryKey: ["twitchClips", broadcaster_name],
-    queryFn: ({ pageParam }) => getClips({ pageParam, broadcaster_name }),
+    queryFn: ({ pageParam }) => getClips({ pageParam, broadcaster_name, first: 100, game_id }),
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     initialPageParam: "", // Add this line
   });
@@ -25,8 +30,13 @@ const TwitchClips: React.FC<Props> = ({ broadcaster_name }) => {
     }
   }, [inView, fetchNextPage, hasNextPage]);
 
+
+  useEffect(() => {
+    fetchNextPage();
+  }, [game_id]);
+
   return (
-    <div className="w-full">
+    <div className="w-full ">
       {status === "error" && <p>Error: {(error as Error).message}</p>}
 
       {data?.pages.map((page, pageIndex) => (

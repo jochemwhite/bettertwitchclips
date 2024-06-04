@@ -1,10 +1,9 @@
 "use server";
 
 import { TwitchAPI } from "@/lib/axios/twitch-api";
-import { ChannelSearchResults, TwitchClipsResponse, TwitchUsersResponse } from "@/types/twitch-api";
+import { ChannelSearchResults, GamesResponse, TwitchClipsResponse, TwitchUsersResponse } from "@/types/twitch-api";
 
-export async function searchChatter(value: string, first: number = 10, ) {
-  
+export async function searchChatter(value: string, first: number = 10) {
   try {
     const res = await TwitchAPI.get<ChannelSearchResults>(`/search/channels`, {
       params: {
@@ -32,9 +31,10 @@ interface FetchClipsParams {
   pageParam?: string;
   broadcaster_name: string;
   first?: number;
+  game_id?: string | null
 }
 
-export async function getClips({ pageParam = '', broadcaster_name, first = 20 }: FetchClipsParams) {
+export async function getClips({ pageParam = "", broadcaster_name, first = 20, game_id }: FetchClipsParams) {
   try {
     const user = await getBroadcasterId(broadcaster_name);
 
@@ -46,10 +46,14 @@ export async function getClips({ pageParam = '', broadcaster_name, first = 20 }:
       },
     });
 
-    // Sort by date
-    res.data.data.sort((a, b) => {
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    });
+    if(game_id) {
+      const filteredClips = res.data.data.filter(clip => clip.game_id === game_id)
+      return {
+        data: filteredClips,
+        nextCursor: res.data.pagination.cursor,
+      };
+    }
+
 
     return {
       data: res.data.data,
@@ -64,15 +68,18 @@ export async function getClips({ pageParam = '', broadcaster_name, first = 20 }:
   }
 }
 
-export async function getGameID(game: string) {
+export async function getGameID(game: string, first: number = 5) {
   try {
-    const res = await TwitchAPI.get(`/games`, {
+    const res = await TwitchAPI.get<GamesResponse>(`/games`, {
       params: {
         name: game,
+        first: first,
       },
     });
-    console.log(res.data);
-    return res.data.data[0].id;
+
+    console.log(res.data.data);
+
+    return res.data.data
   } catch (error) {
     console.log(error);
   }

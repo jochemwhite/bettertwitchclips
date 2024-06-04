@@ -40,7 +40,6 @@ export function SearchBar({ setResults, Component, results, search, placeholder 
 
   const handleClickAway = () => {
     setResults([]);
-    setSearchTerm("");
   };
 
   return (

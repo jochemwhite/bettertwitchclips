@@ -1,4 +1,4 @@
-import TwitchSearchBar from "@/components/search-bars/twitch-search";
+import TwitchSearchBar from "@/components/search-bars/twitch-channel-search";
 
 
 export default function Home() {

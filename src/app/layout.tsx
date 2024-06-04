@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import TwitchSearchBar from "@/components/search-bars/twitch-search";
+import TwitchSearchBar from "@/components/search-bars/twitch-channel-search";
 import ReactQueryProvider from "@/providers/reactquery-provider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Footer from "@/components/layout/footer";
+import TwitchGameSearchBar from "@/components/search-bars/twitch-game-search";
+import { GetClipsForm } from "@/components/form/get-clips-form";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +27,9 @@ export default function RootLayout({
         <ReactQueryProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             <main className="w-[1600px] mx-auto">
-              <TwitchSearchBar />
+              <div className="my-4">
+                <GetClipsForm />
+              </div>
               <div className="mt-4">{children}</div>
             </main>
             <Footer />

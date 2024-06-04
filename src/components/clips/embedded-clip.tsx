@@ -9,6 +9,9 @@ interface EmbeddedClipProps {
   muted?: boolean;
 }
 
+
+const allowedhosts = ["localhost", "bettertwitchclips.com", "www.bettertwitchclips.com",  ];
+
 export default function EmbeddedClip({ height, width, embed_url, autoplay, muted}: EmbeddedClipProps) {
   return (
     <iframe

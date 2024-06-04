@@ -1,33 +1,37 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { getGameID } from "@/actions/twitch-api";
+import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ChannelSearchResult } from "@/types/twitch-api";
-import { Button } from "@/components/ui/button";
+import { Game } from "@/types/twitch-api";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
-import { searchChatter } from "@/actions/twitch-api";
 import { SearchBar } from "../ui/search-bar";
-import Link from "next/link";
 
-interface results extends ChannelSearchResult {
+interface results extends Game {
   exactMatch?: boolean;
 }
 
-export default function TwitchSearchBar() {
+interface Props {
+  setValue: (value: string) => void;
+}
+
+export default function TwitchGameSearchBar({ setValue }: Props) {
   const [results, setResults] = useState<results[]>([]);
 
   const search = async (searchTerm: string) => {
-    const data = await searchChatter(searchTerm, 5);
+    const data = await getGameID(searchTerm, 5);
     if (data) {
       setResults(data);
 
-      const match = data.find((channel: ChannelSearchResult) => channel.display_name.toLowerCase() === searchTerm.toLowerCase());
+      const match = data.find((game: Game) => game.name === searchTerm.toLowerCase());
       if (match) {
-        const newResults: results[] = data.map((channel: ChannelSearchResult) => {
-          if (channel.display_name.toLowerCase() === searchTerm.toLowerCase()) {
-            return { ...channel, exactMatch: true };
+        const newResults: results[] = data.map((game: Game) => {
+          if (game.name.toLowerCase() === searchTerm.toLowerCase()) {
+            return { ...game, exactMatch: true };
           }
-          return channel;
+          return game;
         });
 
         newResults.sort((a, b) => {
@@ -40,16 +44,17 @@ export default function TwitchSearchBar() {
         setResults(newResults);
       }
     } else {
-      toast.error("Error searching for chatters.");
+      toast.error("Error searching for games.");
     }
   };
+  
 
   return (
     <SearchBar
       results={results}
       setResults={setResults}
       search={search}
-      placeholder="Search for a streamer"
+      placeholder="Search for a game"
       Component={() => (
         <Table>
           <TableHeader>
@@ -65,21 +70,21 @@ export default function TwitchSearchBar() {
             {results.map((channel) => (
               <TableRow key={channel.id}>
                 <TableCell className="font-medium">
-                  <img src={channel.thumbnail_url} className="w-8 h-8 rounded-full" />
+                  <img src={channel.box_art_url} className="w-8 h-8 rounded-full" />
                 </TableCell>
                 <TableCell>
                   <HoverCard>
                     <HoverCardTrigger asChild>
-                      <Button variant="ghost">{channel.display_name}</Button>
+                      <Button variant="ghost">{channel.name}</Button>
                     </HoverCardTrigger>
                     <HoverCardContent className="w-80"></HoverCardContent>
                   </HoverCard>
                   {channel.exactMatch && <span className="text-xs text-red-500">Exact Match</span>}
                 </TableCell>
                 <TableCell>
-                  <Link href={`/clips/${channel.broadcaster_login}`}>
-                    <Button variant="default">View Clips</Button>
-                  </Link>
+                  <Button variant="default" onClick={() => setValue(channel.id)}>
+                    Select
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

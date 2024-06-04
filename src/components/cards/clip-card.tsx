@@ -26,7 +26,7 @@ export default function ClipCard({ clip, innerRef }: Props) {
       <Modal setModal={handleModal} open={open} title={title}>
         <EmbeddedClip height="500" width="800" embed_url={embed_url} autoplay muted={false} />
       </Modal>
-      <Card className="max-w-96 cursor-pointer" onClick={handleClick} ref={innerRef}>
+      <Card className="max-w-96 cursor-pointer h-96" onClick={handleClick} ref={innerRef}>
         <CardHeader>
           <CardTitle>{title}</CardTitle>
           <CardDescription>Cliped by: {creator_name}</CardDescription>
